@@ -38,8 +38,8 @@ class ChineseResurece(Resource) :
         print(response["message"])
         print()
         print(chinese)
-        # print()
-        # print(response["result"])
+        print()
+        print(response["message"]["result"])
         # print()
         # print(response["translatedText"])
 
@@ -51,9 +51,9 @@ class NewsResource(Resource) :
     def get(self) :
 
         query = request.args.get('query')
-        # request.args.get('display'),
+        display = request.args.get('display'),
         # request.args.get('start'),
-        # request.args.get('sort') 
+        sort = request.args.get('sort') 
 
         # 1. 네이버 뉴스 검색 API를 호출한다
 
@@ -62,8 +62,8 @@ class NewsResource(Resource) :
         
         # ***파라미터를 설정할 때엔 딕셔너리로 하여 설정 해준다.
         query_string = {'query' : query,
-                        'display' : 10,
-                        'sort' : 'date'}
+                        'display' : display,
+                        'sort' : sort}
 
         response = requests.get('https://openapi.naver.com/v1/search/news.json',
                      params= query_string,
@@ -77,5 +77,40 @@ class NewsResource(Resource) :
         
 
         return {'result' :'success',
+                'items' : response,
+                'count' : len(response)}, 200
+    
+class booksResource(Resource) :
+     def get(self) :
+
+        query = request.args.get('query')
+        display = request.args.get('display')
+        sort = request.args.get('sort')
+
+        # 네이버 함수 호출
+
+        req_parms = {'query' : query,
+                         'display' : display,
+                         'sort' : sort}
+            
+        req_header = {'X-Naver-Client-Id' : 'lvlXKbxzsfeexwIET9zZ',
+                          'X-Naver-Client-Secret' : 'K2ho6DDSQR'}
+
+        response = requests.get('https://openapi.naver.com/v1/search/book.json',
+                         params=req_parms,
+                         headers= req_header
+                         )
+        
+        response = response.json()
+        print()
+        print(response)
+        print()
+
+        response = response['items']
+    
+
+            
+
+        return {'result' : 'success',
                 'items' : response,
                 'count' : len(response)}, 200
